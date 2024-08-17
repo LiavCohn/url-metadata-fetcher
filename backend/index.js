@@ -23,10 +23,6 @@ app.use(limiter);
  * @returns
  */
 async function fetchMetadata(url) {
-  console.log("got url! ", url);
-  if (!url.startsWith("http")) {
-    return Promise.reject({ url, message: "Invalid URL." });
-  }
   try {
     const metadata = await urlMetadata(url);
     const { title, description, "og:image": ogImage } = metadata;
@@ -59,18 +55,22 @@ app.post("/fetch-metadata", async (req, res) => {
       .status(400)
       .json({ error: "Invalid input. Expecting an array of URLs." });
   }
+  try {
+    const results = await Promise.all(urls.map(fetchMetadata));
 
-  // Use Promise.allSettled to handle all results
-  const results = await Promise.allSettled(urls?.map(fetchMetadata));
+    //format the results
+    // const metadataResults = results.map((result) =>
+    //   result.status === "fulfilled"
+    //     ? result.value
+    //     : { url: result.reason.url, error: result.reason.message }
+    // );
 
-  //format the results
-  const metadataResults = results.map((result) =>
-    result.status === "fulfilled"
-      ? result.value
-      : { url: result.reason.url, error: result.reason.message }
-  );
-
-  return res.status(200).json(metadataResults);
+    return res.status(200).json(results);
+  } catch {
+    return res
+      .status(500)
+      .json({ error: "Oops something went wrong, please try again." });
+  }
 });
 
 module.exports = app;
