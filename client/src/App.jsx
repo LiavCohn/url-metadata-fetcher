@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import UrlInput from './components/UrlInput';
 import Loader from "./components/Loader"
+import { ENV } from './env';
 import './styles/app.css';
 
 function App() {
@@ -35,8 +36,6 @@ function App() {
     }
   };
 
-  const deployment = true
-  const url = deployment ? "https://url-metadata-fetcher-backend.vercel.app" : "http://localhost:5000"
   const canSubmit = urls.length >= 3 && urls.every((url) => isValidUrl(url));
 
   const handleSubmit = async (e) => {
@@ -46,7 +45,7 @@ function App() {
     setLoading(true)
 
     try {
-      const response = await axios.post(`${url}/fetch-metadata`, { urls });
+      const response = await axios.post(`${ENV}/fetch-metadata`, { urls });
       console.log({response})
       if (response.status != 200)  {
         const result = await response.json();
