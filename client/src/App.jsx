@@ -44,7 +44,13 @@ function App() {
     setLoading(true)
     try {
       const response = await axios.post('http://localhost:5000/fetch-metadata', { urls });
-      setMetadata(response.data);
+      if (!response.ok) {
+        const result = await response.json();
+        setError(result?.error || 'An unexpected error occurred');
+      }
+      else {
+        setMetadata(response.data);
+      }
     } catch (err) {
       setError('An error occurred while fetching metadata.');
     }
