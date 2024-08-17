@@ -35,6 +35,8 @@ function App() {
     }
   };
 
+  const deployment = true
+  const url = deployment ? "https://url-metadata-fetcher-backend.vercel.app" : "http://localhost:5000"
   const canSubmit = urls.length >= 3 && urls.every((url) => isValidUrl(url));
 
   const handleSubmit = async (e) => {
@@ -42,8 +44,9 @@ function App() {
     setError('');
     setMetadata([]);
     setLoading(true)
+
     try {
-      const response = await axios.post('http://localhost:5000/fetch-metadata', { urls });
+      const response = await axios.post(`${url}/fetch-metadata`, { urls });
       if (!response.ok) {
         const result = await response.json();
         setError(result?.error || 'An unexpected error occurred');
