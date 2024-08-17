@@ -58,13 +58,6 @@ app.post("/fetch-metadata", async (req, res) => {
   try {
     const results = await Promise.all(urls.map(fetchMetadata));
 
-    //format the results
-    // const metadataResults = results.map((result) =>
-    //   result.status === "fulfilled"
-    //     ? result.value
-    //     : { url: result.reason.url, error: result.reason.message }
-    // );
-
     return res.status(200).json(results);
   } catch {
     return res
@@ -72,5 +65,5 @@ app.post("/fetch-metadata", async (req, res) => {
       .json({ error: "Oops something went wrong, please try again." });
   }
 });
-
+app.listen(5000, console.log("Server running on port 5000"));
 module.exports = app;
