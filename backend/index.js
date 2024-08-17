@@ -50,6 +50,7 @@ async function fetchMetadata(url) {
 
 app.post("/fetch-metadata", async (req, res) => {
   const { urls } = req.body;
+  console.log({ urls });
   if (!urls || !Array.isArray(urls)) {
     return res
       .status(400)
