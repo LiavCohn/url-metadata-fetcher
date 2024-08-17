@@ -47,6 +47,7 @@ function App() {
 
     try {
       const response = await axios.post(`${url}/fetch-metadata`, { urls });
+      console.log({response})
       if (!response.ok) {
         const result = await response.json();
         setError(result?.error || 'An unexpected error occurred');
