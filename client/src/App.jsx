@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import UrlInput from './components/UrlInput';
 import Loader from "./components/Loader"
+import MetedataItem from "./components/MetedataItem"
+
 import { ENV } from './env';
 import './styles/app.css';
 
@@ -43,19 +45,14 @@ function App() {
     setError('');
     setMetadata([]);
     setLoading(true)
-
+    
     try {
       const response = await axios.post(`${ENV}/fetch-metadata`, { urls });
-      console.log({response})
-      if (response.status != 200)  {
-        const result = await response.json();
-        setError(result?.error || 'An unexpected error occurred');
-      }
-      else {
-        setMetadata(response.data);
-      }
+      setMetadata(response.data);
     } catch (err) {
-      setError('An error occurred while fetching metadata.');
+        // The error message can be found in err.response.data.error
+        const errorMessage = err?.response?.data?.error || 'An unexpected error occurred';
+        setError('An error occurred while fetching metadata: ' + errorMessage);
     }
     finally {
       setLoading(false)
@@ -88,15 +85,13 @@ function App() {
         {error && <p className="error">{error}</p>}
       </div>
       {loading && <Loader></Loader>}
-        <div className="metadata-container">
-          {metadata.map((item, index) => (
-            <div key={index} className="metadata-item">
-              <h2>{item.title || 'No Title Available'}</h2>
-              <br></br>
-              <p>{item.description || 'No Description Available'}</p>
-              {item.image && <img src={item.image} alt="Preview" />}
-              {item.error && <p className="error">{item.error}</p>}
-            </div>
+      <div className="metadata-container">
+        {metadata.map((item, index) =>
+          (<MetedataItem
+            index={index}
+            description={item.description}
+            title={item.title}
+            image={item.image} />
           ))}
         </div>
     </div>

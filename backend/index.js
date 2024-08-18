@@ -25,34 +25,26 @@ app.use(limiter);
  * @returns
  */
 async function fetchMetadata(url) {
-  try {
-    const metadata = await urlMetadata(url);
-    const { title, description, "og:image": ogImage } = metadata;
-    let image = metadata.image || ogImage;
+  const metadata = await urlMetadata(url);
+  const { title, description, "og:image": ogImage } = metadata;
+  let image = metadata.image || ogImage;
 
-    //some images have relative path, e.x Google
-    if (image && !image.startsWith("http")) {
-      const baseUrl = new URL(url);
-      image = new URL(image, baseUrl.origin).href;
-    }
-
-    return {
-      url,
-      title: title || "No title available",
-      description: description || "No description available",
-      image: image || "No image available",
-    };
-  } catch (error) {
-    return Promise.reject({
-      url,
-      message: `Failed to fetch metadata: ${error.message}`,
-    });
+  //some images have relative path, e.x Google
+  if (image && !image.startsWith("http")) {
+    const baseUrl = new URL(url);
+    image = new URL(image, baseUrl.origin).href;
   }
+
+  return {
+    url,
+    title: title || "No title available",
+    description: description || "No description available",
+    image: image || "No image available",
+  };
 }
 
 app.post("/fetch-metadata", async (req, res) => {
   const { urls } = req.body;
-  console.log({ urls });
   if (!urls || !Array.isArray(urls)) {
     return res
       .status(400)
@@ -62,10 +54,8 @@ app.post("/fetch-metadata", async (req, res) => {
     const results = await Promise.all(urls.map(fetchMetadata));
 
     return res.status(200).json(results);
-  } catch {
-    return res
-      .status(500)
-      .json({ error: "Oops something went wrong, please try again." });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
   }
 });
 

@@ -1,4 +1,3 @@
-// src/UrlInput.js
 import React from 'react';
 import "../styles/url.css"
 function UrlInput({ index, value, onChange, onDelete, isValid }) {

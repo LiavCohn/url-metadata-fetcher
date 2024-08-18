@@ -1,0 +1,10 @@
+.metadata-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .metadata-item img {
+    max-width: 100%;
+    height: auto;
+  }
